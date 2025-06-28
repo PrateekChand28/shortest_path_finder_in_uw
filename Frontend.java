@@ -37,7 +37,9 @@ public class Frontend implements FrontendInterface {
         htmlInputControls.append("<br>");
         htmlInputControls.append(
                 "<button id=\"find-shortest\" type=\"button\" " +
-                        "onclick=\"generateShortestPathResponseHTML()\">" +
+                        "onclick=\"generateShortestPathResponseHTML(" +
+                        "document.getElementById('start').value," +
+                        "document.getElementById('end').value)\">" +
                         "Find Shortest Path" +
                 "</button>");
 
@@ -112,7 +114,8 @@ public class Frontend implements FrontendInterface {
                 "</label>");
         htmlFindFurthestControls.append(
                 "<button id=\"find-furthest\" type=\"button\" " +
-                        "onclick=\"generateFurthestDestinationFromResponseHTML()\">" +
+                        "onclick=\"generateFurthestDestinationFromResponseHTML(" +
+                        "document.getElementById('from').value)\">" +
                         "Furthest Destination From" +
                 "</button>");
 

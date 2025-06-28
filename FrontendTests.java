@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -47,7 +49,7 @@ public class FrontendTests {
 
     /**
      * Tests if generateFurthestDestinationFromResponseHTML() returns all the necessary HTML
-     * fragments with expected backend responses
+     * fragments
      */
     @Test
     public void frontendTest2() {
@@ -90,7 +92,9 @@ public class FrontendTests {
                 shortestPathPrompt.contains("id=\"end\"") && shortestPathPrompt.contains("<input " +
                 "type=\"text\" id=\"end\">")
                 && shortestPathPrompt.contains("<button id=\"find-shortest\" type=\"button\" " +
-                "onclick=\"generateShortestPathResponseHTML()\">") &&
+                "onclick=\"generateShortestPathResponseHTML(" +
+                "document.getElementById('start').value," +
+                "document.getElementById('end').value)\">") &&
                 shortestPathPrompt.contains("</button>"), "Missing HTML Tags");
 
         // Verifies if required HTML tags are present in the input controls produced by
@@ -100,7 +104,8 @@ public class FrontendTests {
                 furthestPathPrompt.contains("id=\"find-furthest\"") &&
                 furthestPathPrompt.contains("<input type=\"text\" id=\"from\">") &&
                 furthestPathPrompt.contains("<button id=\"find-furthest\" type=\"button\" " +
-                        "onclick=\"generateFurthestDestinationFromResponseHTML()\">") &&
+                                "onclick=\"generateFurthestDestinationFromResponseHTML(" +
+                                "document.getElementById('from').value)\">") &&
                 furthestPathPrompt.contains("</button>"), "Missing HTML Tags");
 
     }
