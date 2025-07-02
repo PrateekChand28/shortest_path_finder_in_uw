@@ -73,8 +73,125 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
      *                                or end data do not correspond to a graph node
      */
     protected SearchNode computeShortestPath(NodeType start, NodeType end) {
-        // implement in step 5.3
-        return null;
+
+        // DijkstraGraph is a derived class of BaseGraph. The constructor of the BaseGraph is
+        // inherited in the DijkstraGraph graph and is initialized with PlaceholderMap.
+        // PlaceholderMap implements the MapADT which underneath uses HashMap as the base map and
+        // all the methods invoked in PlaceholderMap use the HashMap class methods.
+
+        // containsNode() is inherited by DijkstraGraph. In the BaseGraph, the parameter passed to
+        // this method checks in the PlaceholderMap and searches for matching key using the
+        // .containsKey() method. The .containsKey() further searches for the key value in the
+        // base HashMap
+        if (!this.containsNode(start)) {
+            throw new NoSuchElementException("Start node is not present in the base graph");
+        }
+
+        if (!this.containsNode(end)) {
+            throw new NoSuchElementException("End node is not present in the base graph");
+        }
+
+        // SearchNode contains cost field and has predecessor pointing to the previous SearchNode
+        // These features are why we are not directly using the Node class. When looking for
+        // different possibilities, the same node can have different paths since they have
+        // different edgesLeaving and SearchNode will help represent these possibilities.
+
+        // Priority queue can use the cost field in the SearchNode to process cheapest path first.
+        // Helps to keep track of unvisited nodes. Since SearchNode implements comparable
+        // interface, the Priority Queue uses the overridden compareTo() method in the
+        // SearchNode class when deciding priority of SearchNodes inserted into it
+        PriorityQueue<SearchNode> unvisitedQueue = new PriorityQueue<>();
+
+        // MapADT helps to keep track of visited nodes. Treats the map as a visited set by
+        // inserting nodes as both keys and values. The containsKey() method from this data
+        // structure can later be used to check if the node is already visited. If the node is
+        // already visited then it is not added into the visitedNodeList and the edge nodes from
+        // that node are not explored. That also means that this list will never have duplicates.
+        // However, there will be cases when the priority queue above will have some shared
+        // predecessor or successor node. Then again the edge weights will be different which is
+        // we run in the debug mode is one of the way to identify the predecessor-successor pair
+        PlaceholderMap<Node, Node> visitedNodesList = new PlaceholderMap<>();
+
+        // Step 1: Add the starting node into the priority queue. Since it is the starting node,
+        // its cost is zero and has no predecessor. Since we need to use SearchNode to keep track
+        // of path, we need to get the node from the graph with this starting value and turn it
+        // into a SearchNode.
+        // nodes here is a MapADT with KeyType as NodeType and ValueType as Node, so the .get()
+        // returns the node containing this starting value in the graph
+        SearchNode startingNode = new SearchNode(this.nodes.get(start), 0.0, null);
+        unvisitedQueue.add(startingNode);
+
+        // Step 2: First add the starting node into the visited list and then remove from the
+        // priority queue. Then, all the nodes from the list of edgeLeaving field of the starting
+        // node are added into the priority queue. The priority queue should sequence these
+        // adjacent nodes in the expected priority order. So, when the poll() is invoked, the
+        // head removed from the queue represents the node with the cheapest cost.
+        while (!unvisitedQueue.isEmpty()) {
+
+            // retrieves the node with the minimum cost from the current priority queue
+            SearchNode currentVertex = unvisitedQueue.poll();
+
+            // Step 3: It is necessary to check the visited list of nodes here because multiple
+            // predecessors can share the same node and if that node was already previously added
+            // into the visited list then that means that the new node + predecessor pair cost
+            // more. So this SearchNode needs to be skipped
+            if (!visitedNodesList.containsKey(currentVertex.node)) {
+
+                // Step 4: Need to keep track of this node if the node doesn't already exist
+                // in the visited list of nodes
+                visitedNodesList.put(currentVertex.node, currentVertex.node);
+
+                // Step 5: Now before we further explore the edges of this current node, we should
+                // confirm if we already reached the end. If we reached the end, we should terminate
+                // the loop and stop exploring other edges.
+                if (currentVertex.node.data.equals(end)) {
+                    // this is the final end point and so to traverse the path we need to
+                    // traverse through the predecessors that led to the ending node
+                    // this also means that not all the visited nodes will fall in this path
+                    return currentVertex;
+                }
+
+                // Step 6: Since we have not yet reached the end, what we need to do is now from
+                // this current vertex, we need to explore outgoing edges and their edge weight.
+                // We then need to calculate the cost of taking each path. We then add each of
+                // the adjacent nodes into the priority queue for the priority queue to continue
+                // doing its job of selecting the less costly SearchNode.
+                for (Edge eachEdgeAdjacentToCurrentVertex : currentVertex.node.edgesLeaving) {
+
+                    // Step 7: We explicitly converted the data field of the Edge class here because
+                    // it is a generic data type but if we look at the cost field in the SearchNode
+                    // class, its data type is double. When I usually work on paper, I tend to
+                    // forget adding the edge weight with the predecessor's weight, which may
+                    // lead to an unexpected path.
+                    double costForTakingCurrentEdge =
+                            currentVertex.cost + (double) eachEdgeAdjacentToCurrentVertex.data;
+
+                    // Step 8: Here, the SearchNode is being added to the priority queue. The
+                    // advantage of using SearchNode here is that we are able to track the path we
+                    // are taking from each vertex thanks to the fact that we are storing the
+                    // predecessor information into each SearchNode. Since the priority queue will
+                    // end up popping only the SearchNodes that are less costly to their
+                    // counterparts, when the end node is finally reached, the SearchNode will
+                    // have access to all the previous predecessors that were selected. In the
+                    // lecture, it is similar to writing the predecessor-successor node pair.
+                    // Something that can be noticed when running in debug mode is that, we can
+                    // see who the predecessor is and so in cases when the same successors are there
+                    // in the queue, we can tell which predecessor-successor pair it is.
+                    SearchNode currentAdjacentNode =
+                            new SearchNode(eachEdgeAdjacentToCurrentVertex.successor,
+                                    costForTakingCurrentEdge, currentVertex);
+
+                    unvisitedQueue.add(currentAdjacentNode);
+                }
+            }
+        }
+
+        // Step 8: If no path was found, then that means no path exist to reach the end from the
+        // start. This means when we were adding SearchNodes for each vertex starting from our
+        // starting node, we never encountered an edge that linked with the end node. Hence, the
+        // while loop above never returned a vertex.
+        throw new NoSuchElementException("Path doesn't exist between the given points");
+
     }
 
     /**
@@ -89,8 +206,27 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
      * @return list of data item from node along this shortest path
      */
     public List<NodeType> shortestPathData(NodeType start, NodeType end) {
-        // implement in step 5.4
-        return null;
+
+        // SearchNode for the end node. Traversing back all the predecessors linked to this
+        // end node gives the shortest path.
+        SearchNode endNode = this.computeShortestPath(start, end);
+        LinkedList<NodeType> shortestPathTaken = new LinkedList<>();
+
+        // Adds the end search node as the head of the linked list initially and then traverses
+        // through the predecessors until the start node is reached.
+        // updates the head of the linked list with new predecessor each time. If the hint was
+        // not provided in the import section, I almost ended up using stacks. That way the start
+        // node would get added in the top, and it would also maintain O(1) time complexity. Here
+        // the head pointer gets updated in constant time and only one link should be updated
+        // when a new predecessor is added which also happens in constant time.
+        while (endNode != null) {
+            shortestPathTaken.addFirst(endNode.node.data);
+            // Since the start node has null as its predecessor the traversal gets terminated
+            // once the start node is added to the list
+            endNode = endNode.predecessor;
+        }
+
+        return shortestPathTaken;
     }
 
     /**
@@ -103,19 +239,20 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
      * @return the cost of the shortest path between these nodes
      */
     public double shortestPathCost(NodeType start, NodeType end) {
-        // implement in step 5.4
-        return Double.NaN;
+        // The cost field of the end SearchNode is cumulative of all the edge weights from start
+        // node to all the adjacent nodes that fall in the shortest path
+        return computeShortestPath(start, end).cost;
     }
 
 
     /**
-     * Tests the lecture example to verify if the graph implementation returns the correct
-     * shortest path and cost. The start node is D and the end node is I. The expected shortest
-     * path is D->G->H->I with the cost of 13.
+     * Tests the lecture example to verify if the graph implementation returns the correct shortest
+     * path and cost. The start node is D and the end node is I. The expected shortest path is
+     * D->G->H->I with the cost of 13.
      */
     @Test
     public void testLectureDemo() {
-        DijkstraGraph<String, Integer> testGraph = new DijkstraGraph<>();
+        DijkstraGraph<String, Double> testGraph = new DijkstraGraph<>();
         testGraph.insertNode("A");
         testGraph.insertNode("B");
         testGraph.insertNode("D");
@@ -127,25 +264,25 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
         testGraph.insertNode("L");
         testGraph.insertNode("M");
 
-        testGraph.insertEdge("G", "A", 4);
-        testGraph.insertEdge("D", "A", 7);
-        testGraph.insertEdge("A", "B", 1);
-        testGraph.insertEdge("H", "B", 6);
-        testGraph.insertEdge("I", "D", 1);
-        testGraph.insertEdge("M", "E", 3);
-        testGraph.insertEdge("D", "F", 4);
-        testGraph.insertEdge("M", "F", 4);
-        testGraph.insertEdge("D", "G", 2);
-        testGraph.insertEdge("F", "G", 9);
-        testGraph.insertEdge("A", "H", 7);
-        testGraph.insertEdge("G", "H", 9);
-        testGraph.insertEdge("I", "H", 2);
-        testGraph.insertEdge("M", "I", 4);
-        testGraph.insertEdge("H", "I", 2);
-        testGraph.insertEdge("G", "L", 7);
-        testGraph.insertEdge("H", "L", 2);
-        testGraph.insertEdge("A", "M", 5);
-        testGraph.insertEdge("B", "M", 3);
+        testGraph.insertEdge("G", "A", 4.0);
+        testGraph.insertEdge("D", "A", 7.0);
+        testGraph.insertEdge("A", "B", 1.0);
+        testGraph.insertEdge("H", "B", 6.0);
+        testGraph.insertEdge("I", "D", 1.0);
+        testGraph.insertEdge("M", "E", 3.0);
+        testGraph.insertEdge("D", "F", 4.0);
+        testGraph.insertEdge("M", "F", 4.0);
+        testGraph.insertEdge("D", "G", 2.0);
+        testGraph.insertEdge("F", "G", 9.0);
+        testGraph.insertEdge("A", "H", 7.0);
+        testGraph.insertEdge("G", "H", 9.0);
+        testGraph.insertEdge("I", "H", 2.0);
+        testGraph.insertEdge("M", "I", 4.0);
+        testGraph.insertEdge("H", "I", 2.0);
+        testGraph.insertEdge("G", "L", 7.0);
+        testGraph.insertEdge("H", "L", 2.0);
+        testGraph.insertEdge("A", "M", 5.0);
+        testGraph.insertEdge("B", "M", 3.0);
 
         List<String> shortestPathBetweenDtoI = testGraph.shortestPathData("D", "I");
         Double shortestPathCostBetweenDtoI = testGraph.shortestPathCost("D", "I");
@@ -163,12 +300,12 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
 
     /**
      * Tests the modified lecture example to verify if the graph implementation returns the correct
-     * shortest path and cost. The start node is F and the end node is M. The expected shortest
-     * path is F->G->A->M with the cost of 17.
+     * shortest path and cost. The start node is F and the end node is M. The expected shortest path
+     * is F->G->A->B->M with the cost of 17.
      */
     @Test
     public void testLectureDifferentPath() {
-        DijkstraGraph<String, Integer> testGraph = new DijkstraGraph<>();
+        DijkstraGraph<String, Double> testGraph = new DijkstraGraph<>();
         testGraph.insertNode("A");
         testGraph.insertNode("B");
         testGraph.insertNode("D");
@@ -180,48 +317,49 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
         testGraph.insertNode("L");
         testGraph.insertNode("M");
 
-        testGraph.insertEdge("G", "A", 4);
-        testGraph.insertEdge("D", "A", 7);
-        testGraph.insertEdge("A", "B", 1);
-        testGraph.insertEdge("H", "B", 6);
-        testGraph.insertEdge("I", "D", 1);
-        testGraph.insertEdge("M", "E", 3);
-        testGraph.insertEdge("D", "F", 4);
-        testGraph.insertEdge("M", "F", 4);
-        testGraph.insertEdge("D", "G", 2);
-        testGraph.insertEdge("F", "G", 9);
-        testGraph.insertEdge("A", "H", 7);
-        testGraph.insertEdge("G", "H", 9);
-        testGraph.insertEdge("I", "H", 2);
-        testGraph.insertEdge("M", "I", 4);
-        testGraph.insertEdge("H", "I", 2);
-        testGraph.insertEdge("G", "L", 7);
-        testGraph.insertEdge("H", "L", 2);
-        testGraph.insertEdge("A", "M", 5);
-        testGraph.insertEdge("B", "M", 3);
+        testGraph.insertEdge("G", "A", 4.0);
+        testGraph.insertEdge("D", "A", 7.0);
+        testGraph.insertEdge("A", "B", 1.0);
+        testGraph.insertEdge("H", "B", 6.0);
+        testGraph.insertEdge("I", "D", 1.0);
+        testGraph.insertEdge("M", "E", 3.0);
+        testGraph.insertEdge("D", "F", 4.0);
+        testGraph.insertEdge("M", "F", 4.0);
+        testGraph.insertEdge("D", "G", 2.0);
+        testGraph.insertEdge("F", "G", 9.0);
+        testGraph.insertEdge("A", "H", 7.0);
+        testGraph.insertEdge("G", "H", 9.0);
+        testGraph.insertEdge("I", "H", 2.0);
+        testGraph.insertEdge("M", "I", 4.0);
+        testGraph.insertEdge("H", "I", 2.0);
+        testGraph.insertEdge("G", "L", 7.0);
+        testGraph.insertEdge("H", "L", 2.0);
+        testGraph.insertEdge("A", "M", 5.0);
+        testGraph.insertEdge("B", "M", 3.0);
 
-        List<String> shortestPathBetweenDtoI = testGraph.shortestPathData("F", "M");
-        Double shortestPathCostBetweenDtoI = testGraph.shortestPathCost("F", "M");
+        List<String> shortestPathBetweenFtoM = testGraph.shortestPathData("F", "M");
+        Double shortestPathCostBetweenFtoM = testGraph.shortestPathCost("F", "M");
 
         List<String> expectedShortestPath = new ArrayList<>();
         expectedShortestPath.add("F");
         expectedShortestPath.add("G");
         expectedShortestPath.add("A");
+        expectedShortestPath.add("B");
         expectedShortestPath.add("M");
 
-        assertEquals(expectedShortestPath, shortestPathBetweenDtoI, "Incorrect Shortest Path");
-        assertEquals(17, shortestPathCostBetweenDtoI, "Incorrect Shortest Path Cost");
+        assertEquals(expectedShortestPath, shortestPathBetweenFtoM, "Incorrect Shortest Path");
+        assertEquals(17, shortestPathCostBetweenFtoM, "Incorrect Shortest Path Cost");
 
     }
 
     /**
-     * Tests the lecture example to verify if the graph implementation properly handles a case
-     * when no directed edges sequence can be established between two nodes. The start node is E
-     * and the end node is D.
+     * Tests the lecture example to verify if the graph implementation properly handles a case when
+     * no directed edges sequence can be established between two nodes. The start node is E and the
+     * end node is D.
      */
     @Test
     public void testNoDirectedEdgeSequence() {
-        DijkstraGraph<String, Integer> testGraph = new DijkstraGraph<>();
+        DijkstraGraph<String, Double> testGraph = new DijkstraGraph<>();
         testGraph.insertNode("A");
         testGraph.insertNode("B");
         testGraph.insertNode("D");
@@ -233,31 +371,77 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
         testGraph.insertNode("L");
         testGraph.insertNode("M");
 
-        testGraph.insertEdge("G", "A", 4);
-        testGraph.insertEdge("D", "A", 7);
-        testGraph.insertEdge("A", "B", 1);
-        testGraph.insertEdge("H", "B", 6);
-        testGraph.insertEdge("I", "D", 1);
-        testGraph.insertEdge("M", "E", 3);
-        testGraph.insertEdge("D", "F", 4);
-        testGraph.insertEdge("M", "F", 4);
-        testGraph.insertEdge("D", "G", 2);
-        testGraph.insertEdge("F", "G", 9);
-        testGraph.insertEdge("A", "H", 7);
-        testGraph.insertEdge("G", "H", 9);
-        testGraph.insertEdge("I", "H", 2);
-        testGraph.insertEdge("M", "I", 4);
-        testGraph.insertEdge("H", "I", 2);
-        testGraph.insertEdge("G", "L", 7);
-        testGraph.insertEdge("H", "L", 2);
-        testGraph.insertEdge("A", "M", 5);
-        testGraph.insertEdge("B", "M", 3);
+        testGraph.insertEdge("G", "A", 4.0);
+        testGraph.insertEdge("D", "A", 7.0);
+        testGraph.insertEdge("A", "B", 1.0);
+        testGraph.insertEdge("H", "B", 6.0);
+        testGraph.insertEdge("I", "D", 1.0);
+        testGraph.insertEdge("M", "E", 3.0);
+        testGraph.insertEdge("D", "F", 4.0);
+        testGraph.insertEdge("M", "F", 4.0);
+        testGraph.insertEdge("D", "G", 2.0);
+        testGraph.insertEdge("F", "G", 9.0);
+        testGraph.insertEdge("A", "H", 7.0);
+        testGraph.insertEdge("G", "H", 9.0);
+        testGraph.insertEdge("I", "H", 2.0);
+        testGraph.insertEdge("M", "I", 4.0);
+        testGraph.insertEdge("H", "I", 2.0);
+        testGraph.insertEdge("G", "L", 7.0);
+        testGraph.insertEdge("H", "L", 2.0);
+        testGraph.insertEdge("A", "M", 5.0);
+        testGraph.insertEdge("B", "M", 3.0);
 
-        List<String> shortestPathBetweenDtoI = testGraph.shortestPathData("E", "D");
-        Double shortestPathCostBetweenDtoI = testGraph.shortestPathCost("E", "D");
+        assertThrows(NoSuchElementException.class, () -> testGraph.shortestPathData("E", "D"),
+                "No " + "directed edge sequence to calculate path but still didn't throw " +
+                        "exception");
 
-        assertNull(shortestPathCostBetweenDtoI, "No directed edge sequence to calculate path");
-        assertNull(shortestPathCostBetweenDtoI, "No directed edge sequence to calculate cost");
+        assertThrows(NoSuchElementException.class, () -> testGraph.shortestPathCost("E", "D"),
+                "No " + "directed edge sequence to calculate path but still didn't throw " +
+                        "exception");
 
+    }
+
+    /**
+     * Tests question number 3 from assignment to verify if the graph implementation returns the
+     * correct shortest path and cost. The start node is A and the end node is G. The expected
+     * shortest path is A->C->B->E->G with the cost of 9.
+     */
+
+    @Test
+    public void assignmentQuestionThree() {
+        DijkstraGraph<String, Double> testGraph = new DijkstraGraph<>();
+        testGraph.insertNode("A");
+        testGraph.insertNode("B");
+        testGraph.insertNode("C");
+        testGraph.insertNode("D");
+        testGraph.insertNode("E");
+        testGraph.insertNode("F");
+        testGraph.insertNode("G");
+
+        testGraph.insertEdge("C", "B", 2.0);
+        testGraph.insertEdge("F", "B", 2.0);
+        testGraph.insertEdge("A", "C", 2.0);
+        testGraph.insertEdge("F", "C", 4.0);
+        testGraph.insertEdge("A", "D", 4.0);
+        testGraph.insertEdge("B", "D", 2.0);
+        testGraph.insertEdge("F", "D", 3.0);
+        testGraph.insertEdge("B", "E", 3.0);
+        testGraph.insertEdge("D", "E", 4.0);
+        testGraph.insertEdge("A", "F", 3.0);
+        testGraph.insertEdge("C", "G", 8.0);
+        testGraph.insertEdge("E", "G", 2.0);
+
+        List<String> shortestPathBetweenAtoG = testGraph.shortestPathData("A", "G");
+        Double shortestPathCostBetweenAtoG = testGraph.shortestPathCost("A", "G");
+
+        List<String> expectedShortestPath = new ArrayList<>();
+        expectedShortestPath.add("A");
+        expectedShortestPath.add("C");
+        expectedShortestPath.add("B");
+        expectedShortestPath.add("E");
+        expectedShortestPath.add("G");
+
+        assertEquals(expectedShortestPath, shortestPathBetweenAtoG, "Incorrect Shortest Path");
+        assertEquals(9, shortestPathCostBetweenAtoG, "Incorrect Shortest Path Cost");
     }
 }
