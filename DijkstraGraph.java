@@ -160,12 +160,11 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
 
                     // Step 7: We explicitly converted the data field of the Edge class here because
                     // it is a generic data type but if we look at the cost field in the SearchNode
-                    // class, its data type is double. Direct casting using explicit cast (double) failed
-		    // when applied on a wrapper class. So, this means that the When I usually work on paper, I tend to
-                    // forget adding the edge weight with the predecessor's weight, which may
+                    // class, its data type is double.When I usually work on paper, I tend to forget 
+		    // adding the edge weight with the predecessor's weight, which may
                     // lead to an unexpected path.
                     double costForTakingCurrentEdge =
-                            currentVertex.cost + (Double) eachEdgeAdjacentToCurrentVertex.data;
+                            currentVertex.cost + Double.parseDouble(eachEdgeAdjacentToCurrentVertex.data.toString());
 
                     // Step 8: Here, the SearchNode is being added to the priority queue. The
                     // advantage of using SearchNode here is that we are able to track the path we
