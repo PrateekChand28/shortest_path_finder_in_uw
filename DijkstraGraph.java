@@ -186,7 +186,7 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
             }
         }
 
-        // Step 8: If no path was found, then that means no path exist to reach the end from the
+        // Step 9: If no path was found, then that means no path exist to reach the end from the
         // start. This means when we were adding SearchNodes for each vertex starting from our
         // starting node, we never encountered an edge that linked with the end node. Hence, the
         // while loop above never returned a vertex.
