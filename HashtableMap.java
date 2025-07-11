@@ -380,7 +380,7 @@ public class HashtableMap <KeyType, ValueType> implements MapADT<KeyType, ValueT
      */ 
     @Test
     public void testhashtableRemoveandClear(){
-	HashtableMap<Integer, String> testHashtable = new HashtableMap<>(10);
+	HashtableMap<Integer, String> testHashtable = new HashtableMap<>();
 
         testHashtable.put(908100100, "Prateek");
 
