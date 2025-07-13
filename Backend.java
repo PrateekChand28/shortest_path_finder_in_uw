@@ -104,7 +104,7 @@ public class Backend implements BackendInterface{
     public List<String> findLocationsOnShortestPath(String startLocation, String endLocation)
     {
         // Default return value
-        List<String> path = null;
+        List<String> path = new ArrayList<>();
 
         // Check locations are valid
         if (!graph.containsNode(startLocation)){
@@ -125,7 +125,6 @@ public class Backend implements BackendInterface{
             // Locations are valid so NoSuchElementException only thrown if no path exists.
             System.out.println("No possible path found between " + startLocation + " and " + endLocation);
             System.out.println("Error: " + e.getMessage());
-            return null;
         }
 
         return path;
@@ -144,16 +143,16 @@ public class Backend implements BackendInterface{
     public List<Double> findTimesOnShortestPath(String startLocation, String endLocation)
     {
         // Default return value
-        List<String> path = null;
+        List<String> path = new ArrayList<>();
         List<Double> path_times = new ArrayList<Double>();
 
         // Check locations are valid
         if (!graph.containsNode(startLocation)){
             System.out.println("Location \"" + startLocation + "\" not found");
-            return null;
+            return path_times;
         } else if (!graph.containsNode(endLocation)){
             System.out.println("Location \"" + endLocation + "\" not found");
-            return null;
+            return path_times;
         }
 
         // Use GraphADT to get path and return
@@ -166,7 +165,7 @@ public class Backend implements BackendInterface{
             // Locations are valid so NoSuchElementException only thrown if no path exists.
             System.out.println("No possible path found between " + startLocation + " and " + endLocation);
             System.out.println("Error: " + e.getMessage());
-            return null;
+            return path_times;
         }
 
         // Loop over and add each travel time between nodes to path.
