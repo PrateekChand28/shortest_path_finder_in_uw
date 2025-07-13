@@ -218,9 +218,10 @@ public class Backend implements BackendInterface{
 
         if (!foundValidPath) {
             String err = "No location can be reached from " + startLocation;
-            String dist = " Distance from start to end: " +
-                    graph.shortestPathCost(graph.getAllNodes().get(0), graph.getAllNodes().get(graph.getAllNodes().size() - 1));
-            throw new NoSuchElementException(err + dist);
+            //String dist = " Distance from start to end: " +
+                    //graph.shortestPathCost(graph.getAllNodes().get(0), graph.getAllNodes().get(graph.getAllNodes().size() - 1));
+            throw new NoSuchElementException(err);
+	    
         }
 
         return furthest;
