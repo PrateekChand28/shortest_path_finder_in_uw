@@ -1,4 +1,4 @@
-import java.util.List;
+gmport java.util.List;
 
 public class Frontend implements FrontendInterface {
 
@@ -72,24 +72,21 @@ public class Frontend implements FrontendInterface {
                 return "<p>Encountered Exception</p>";
 
         }
-	if(locations.isEmpty() || timeTaken.isEmpty()){
+        if(locations.isEmpty() || timeTaken.isEmpty()){
             return htmlPathDescription.append("<p> No path found </p>").toString();
         }
 
         htmlPathDescription.append
                 ("<p class=\"path-description\">" +
                         "Start point: ").append(start).append("End point: ").append(end).append
-                ("</p>");
+                ("</p>\n");
 
-        htmlPathDescription.append("<ol>");
-        htmlPathDescription.append("\n");
+        htmlPathDescription.append("<ol>\n");
 
         for(String currentLocation: locations){
-            htmlPathDescription.append("<li>").append(currentLocation).append("</li>");
-            htmlPathDescription.append("\n");
+            htmlPathDescription.append("<li>").append(currentLocation).append("</li>\n");
         }
-        htmlPathDescription.append("</ol>");
-        htmlPathDescription.append("\n");
+        htmlPathDescription.append("</ol>\n");
 
         Double totalTravelTime = 0.0;
         for(Double currentTime: timeTaken){
@@ -101,8 +98,7 @@ public class Frontend implements FrontendInterface {
                         "Total Travel Time: ").append(totalTravelTime).append(
                 "</p>");
 
-        return htmlPathDescription.toString();
-    }
+        return htmlPathDescription.toString();    }
 
     /**
      * Returns an HTML fragment that can be embedded within the body of a larger html page.  This
@@ -116,17 +112,16 @@ public class Frontend implements FrontendInterface {
     @Override
     public String generateFurthestDestinationFromPromptHTML() {
         StringBuilder htmlFindFurthestControls = new StringBuilder();
+        //Feedback 2: Improved escape sequence formatting and return statement
         htmlFindFurthestControls.append(
-                "<label for=\"from\"> " +
-                        "Start Location" +
+                "<label for=\"from\"\n>Start Location" +
                         "<input type=\"text\" id=\"from\">" +
-                "</label>");
-        htmlFindFurthestControls.append(
+                "</label>\n"+
                 "<button id=\"find-furthest\" type=\"button\" " +
                         "onclick=\"generateFurthestDestinationFromResponseHTML(" +
                         "document.getElementById('from').value)\">" +
                         "Furthest Destination From" +
-                "</button>");
+                "</button>\n");
 
         return htmlFindFurthestControls.toString();
     }
@@ -159,26 +154,18 @@ public class Frontend implements FrontendInterface {
             return htmlPathDescription.append("<p>No path found</p>").toString();
         }
 
-        htmlPathDescription.append
-                ("<p>" +
-                        "Start point: ").append(start).append
-                ("</p>");
-        htmlPathDescription.append("\n").append
-                ("<p>" +
-                        "Furthest point: ").append(furthestDestination).append
-                ("</p>");
+        // Feedback 2 Implementation: improved escape sequence formatting for better readibility
+        htmlPathDescription.append("<p>Start point: ").append(start).append("</p>\n").append
+                ("<p>Furthest point: ").append(furthestDestination).append("</p>\n");
 
         List<String> locations = backend.findLocationsOnShortestPath(start, furthestDestination);
 
-        htmlPathDescription.append("<ol>");
-        htmlPathDescription.append("\n");
-
+        // Feedback 2 Implementation: improved escape sequence formatting for better readibility
+        htmlPathDescription.append("<ol>\n");
         for(String currentLocation: locations){
-            htmlPathDescription.append("<li>").append(currentLocation).append("</li>");
-            htmlPathDescription.append("\n");
+            htmlPathDescription.append("<li>").append(currentLocation).append("</li>\n");
         }
-        htmlPathDescription.append("</ol>");
-        htmlPathDescription.append("\n");
+        htmlPathDescription.append("</ol>\n");
 
         return htmlPathDescription.toString();
     }
