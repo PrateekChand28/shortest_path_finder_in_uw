@@ -1,4 +1,4 @@
-gmport java.util.List;
+import java.util.List;
 
 public class Frontend implements FrontendInterface {
 
@@ -156,7 +156,13 @@ public class Frontend implements FrontendInterface {
         htmlPathDescription.append("<p>Start point: ").append(start).append("</p>\n").append
                 ("<p>Furthest point: ").append(furthestDestination).append("</p>\n");
 
-        List<String> locations = backend.findLocationsOnShortestPath(start, furthestDestination);
+	List<String> locations = null;
+	try{
+		locations = backend.findLocationsOnShortestPath(start, furthestDestination);
+	} catch (Exception e){
+		System.err.println(e.getMessage());
+		return "<p> Error encountered when calling findLocationsOnShortestPath</p>";
+	}
 
         // Feedback 2 Implementation: improved escape sequence formatting for better readibility
         htmlPathDescription.append("<ol>\n");
