@@ -60,10 +60,19 @@ public class Frontend implements FrontendInterface {
     @Override
     public String generateShortestPathResponseHTML(String start, String end) {
         StringBuilder htmlPathDescription = new StringBuilder();
-        List<String> locations = backend.findLocationsOnShortestPath(start, end);
-        List<Double> timeTaken = backend.findTimesOnShortestPath(start, end);
+        List<String> locations = null;
+        List<Double> timeTaken = null;
 
-        if(locations.isEmpty() || timeTaken.isEmpty()){
+        // Feedback 1 Implementation: wrapped the method call in try-catch block
+        try {
+                locations = backend.findLocationsOnShortestPath(start, end);
+                timeTaken = backend.findTimesOnShortestPath(start, end);
+        } catch (Exception e){
+                System.err.println(e.getMessage());
+                return "<p>Encountered Exception</p>";
+
+        }
+	if(locations.isEmpty() || timeTaken.isEmpty()){
             return htmlPathDescription.append("<p> No path found </p>").toString();
         }
 
@@ -136,7 +145,15 @@ public class Frontend implements FrontendInterface {
     @Override
     public String generateFurthestDestinationFromResponseHTML(String start) {
         StringBuilder htmlPathDescription = new StringBuilder();
-        String furthestDestination = backend.getFurthestDestinationFrom(start);
+
+        String furthestDestination = null;
+        // Feedback 1 Implementation: Wrapped the method call in a try-catch block
+        try{
+                furthestDestination = backend.getFurthestDestinationFrom(start);
+        } catch (Exception e) {
+                System.err.println(e.getMessage());
+                return "<p> Error: Encountered error when calling .getFurthestDestinationFrom()</p>";
+        }
 
         if(furthestDestination.isEmpty()){
             return htmlPathDescription.append("<p>No path found</p>").toString();
