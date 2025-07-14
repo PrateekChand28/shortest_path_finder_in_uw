@@ -46,6 +46,8 @@ if grep -Pv '//' WebApp.java | grep -Pq "Placeholder"; then
 fi
 
 if ! javac -encoding "UTF-8" -cp ../junit5.jar:. *.java; then
+
+if ! javac -cp ../junit5.jar:. *.java; then
 	echo
 	echo "Submission Failed Check: cannot compile all java files in submission"
 	exit 1
@@ -54,6 +56,10 @@ fi
 if ! java -jar ../junit5.jar --class-path=. --select-class=P210SubmissionChecker; then
 	echo
 	echo "Submission Failed Check: one or more JUnit tests failed; if you have submitted (pushed) 3 or more JUnit test methods then your submission is complete for the mid-week deadline"
+
+if ! java -jar ../junit5.jar --class-path=. --select-class=P212SubmissionChecker; then
+	echo
+	echo "Submission Failed Check: one or more JUnit tests failed; if you have submitted (pushed) 5 or more JUnit test methods then your submission is complete for the mid-week deadline"
 	exit 1
 fi
 
