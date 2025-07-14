@@ -23,25 +23,23 @@ public class Frontend implements FrontendInterface {
     @Override
     public String generateShortestPathPromptHTML() {
         StringBuilder htmlInputControls = new StringBuilder();
+        //Feedback 3 Implementation: Making the return statement a single statement with improvements
+        //for readibility
         htmlInputControls.append(
-                "<label for=\"start\"> " +
-                        "Start Location" +
+                "<label for=\"start\"> Start Location"+
                         "<input type=\"text\" id=\"start\">" +
-                "</label>");
-        htmlInputControls.append("<br>");
-        htmlInputControls.append(
-                "<label for=\"end\"> " +
-                        "End Location" +
+                "</label>\n"+
+                "<br\n>"+
+                "<label for=\"end\"> End Location" +
                         "<input type=\"text\" id=\"end\">" +
-                "</label>");
-        htmlInputControls.append("<br>");
-        htmlInputControls.append(
+                "</label>\n"+
+                "<br>\n"+
                 "<button id=\"find-shortest\" type=\"button\" " +
                         "onclick=\"generateShortestPathResponseHTML(" +
                         "document.getElementById('start').value," +
                         "document.getElementById('end').value)\">" +
                         "Find Shortest Path" +
-                "</button>");
+                "</button>\n");
 
         return htmlInputControls.toString();
     }
