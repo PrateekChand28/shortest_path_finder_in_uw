@@ -1,5 +1,5 @@
 startServer: WebApp.class
-
+		sudo java WebApp 80
 WebApp.class: WebApp.java Backend.java BackendInterface.java BaseGraph.java DijkstraGraph.java Frontend.java FrontendInterface.java GraphADT.java HashtableMap.java MapADT.java
 		javac -cp .:../junit5.jar WebApp.java
 		javac -cp .:../junit5.jar Backend.java
@@ -8,7 +8,7 @@ WebApp.class: WebApp.java Backend.java BackendInterface.java BaseGraph.java Dijk
 		javac -cp .:../junit5.jar DijkstraGraph.java
 		javac -cp .:../junit5.jar Frontend.java
 		javac -cp .:../junit5.jar FrontendInterface.java
-		javac -cp .:../junit5.jar GraphAdt.java
+		javac -cp .:../junit5.jar GraphADT.java
 		javac -cp .:../junit5.jar HashtableMap.java
 		javac -cp .:../junit5.jar MapADT.java
 

@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -263,6 +264,26 @@ public class HashtableMap <KeyType, ValueType> implements MapADT<KeyType, ValueT
     @Override
     public int getCapacity() {
         return this.table.length;
+    }
+
+    /**
+     * Retrieves this collection's keys.
+     *
+     * @return a list of keys in the underlying array for this collection
+     */
+    @Override
+    public List<KeyType> getKeys() {
+
+        LinkedList<KeyType> keyList = new LinkedList<>();
+        for (LinkedList<Pair> listAtCurrentIndex : this.table) {
+            if (listAtCurrentIndex == null) {
+                continue;
+            }
+            for (Pair atCurrentIndex : listAtCurrentIndex) {
+                keyList.add(atCurrentIndex.key);
+            }
+        }
+        return keyList;
     }
 
     /**

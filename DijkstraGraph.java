@@ -83,11 +83,11 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
         // this method checks in the PlaceholderMap and searches for matching key using the
         // .containsKey() method. The .containsKey() further searches for the key value in the
         // base HashMap
-        if (!this.containsNode(start)) {
+        if (start == null || !this.containsNode(start)) {
             throw new NoSuchElementException("Start node is not present in the base graph");
         }
 
-        if (!this.containsNode(end)) {
+        if (end == null || !this.containsNode(end)) {
             throw new NoSuchElementException("End node is not present in the base graph");
         }
 
