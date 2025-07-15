@@ -109,4 +109,4 @@ if [[ ! -f "${ROLE}Tests.java" ]]; then
 fi
 
 echo "Submission Passed Basic Scan"
-exit 0
+#exit 0
