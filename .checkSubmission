@@ -46,6 +46,10 @@ if grep -Pv '//' WebApp.java | grep -Pq "Placeholder"; then
 fi
 
 if ! javac -encoding "UTF-8" -cp ../junit5.jar:. *.java; then
+	echo
+	echo "Submission Failed Check: cannot compile all java files in submission"
+	exit 1
+fi
 
 if ! javac -cp ../junit5.jar:. *.java; then
 	echo
