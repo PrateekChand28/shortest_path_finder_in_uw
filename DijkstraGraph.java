@@ -56,7 +56,7 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
      * Constructor that sets the map that the graph uses.
      */
     public DijkstraGraph() {
-        super(new PlaceholderMap<>());
+        super(new HashtableMap<>());
     }
 
     /**
@@ -110,7 +110,7 @@ public class DijkstraGraph<NodeType, EdgeType extends Number> extends BaseGraph<
         // However, there will be cases when the priority queue above will have some shared
         // predecessor or successor node. Then again the edge weights will be different which is
         // we run in the debug mode is one of the way to identify the predecessor-successor pair
-        PlaceholderMap<Node, Node> visitedNodesList = new PlaceholderMap<>();
+        HashtableMap<Node, Node> visitedNodesList = new HashtableMap<>();
 
         // Step 1: Add the starting node into the priority queue. Since it is the starting node,
         // its cost is zero and has no predecessor. Since we need to use SearchNode to keep track
