@@ -1,2 +1,10 @@
 *.class
 *.jar
+.checkSubmission
+.gitlab-ci.yml
+P210SubmissionChecker.java
+P212SubmissionChecker.java
+index.cgi
+h
+groupAndRole.txt
+getBranches
